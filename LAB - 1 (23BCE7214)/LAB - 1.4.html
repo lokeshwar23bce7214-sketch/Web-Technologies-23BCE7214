@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Product Card</title>
+    <style>
+        body {
+            background-color: #e6e6e6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Helvetica', Arial, sans-serif;
+        }
+
+        .card {
+            background: white;
+            width: 300px;
+            padding: 40px;
+            text-align: center;
+            transition: box-shadow 0.3s;
+        }
+
+        .card:hover {
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        img {
+            width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+            /* Filter to make image pop slightly */
+            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.1));
+        }
+
+        h3 {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #999;
+            margin: 0;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin: 10px 0;
+            color: #333;
+        }
+
+        .description {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .price {
+            font-size: 18px;
+            color: #333;
+            font-weight: bold;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        button {
+            background: transparent;
+            border: 2px solid #333;
+            padding: 10px 30px;
+            color: #333;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #333;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h3>Royal Collection</h3>
+        <h1>Antique Mahogany Chair</h1>
+        
+        <img src="image.png" alt="Royal Chair">
+        
+        <p class="description">
+            Hand-carved solid wood frame with gold accents and premium damask upholstery. A masterpiece of vintage luxury.
+        </p>
+
+        <span class="price">$1,250.00</span>
+        <br>
+        <button>Buy Now</button>
+    </div>
+
+</body>
+</html>
