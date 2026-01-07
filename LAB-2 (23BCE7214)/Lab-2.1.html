@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>HTML5 Canvas</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: linear-gradient(120deg, #e3f2fd, #fce4ec);
+    padding: 30px;
+}
+
+.container {
+    max-width: 700px;
+    margin: auto;
+}
+
+.card {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+h2 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+canvas {
+    border: 2px solid #333;
+    background: #fafafa;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="card">
+        
+
+        <!-- Canvas -->
+        <canvas id="myCanvas" width="500" height="300"></canvas>
+    </div>
+</div>
+
+<script>
+const canvas = document.getElementById("myCanvas");
+const ctx = canvas.getContext("2d");
+
+/* Filled Rectangle */
+ctx.fillStyle = "#42a5f5";
+ctx.fillRect(30, 30, 150, 80);
+
+/* Filled Circle */
+ctx.beginPath();
+ctx.arc(350, 70, 40, 0, Math.PI * 2);
+ctx.fillStyle = "#66bb6a";
+ctx.fill();
+
+/* Straight Line */
+ctx.beginPath();
+ctx.moveTo(30, 220);
+ctx.lineTo(470, 220);
+ctx.strokeStyle = "#ef5350";
+ctx.lineWidth = 3;
+ctx.stroke();
+
+/* Text */
+ctx.font = "24px Arial";
+ctx.fillStyle = "#000";
+ctx.fillText("HTML5 Canvas", 160, 160);
+</script>
+
+</body>
+</html>

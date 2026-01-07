@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Task Manager</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: linear-gradient(120deg, #e8f5e9, #e3f2fd);
+    padding: 30px;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.container {
+    max-width: 1000px;
+    margin: auto;
+}
+
+.input-box {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+input {
+    padding: 10px;
+    width: 300px;
+    border-radius: 6px;
+    border: 1px solid #aaa;
+}
+
+button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    background: #1976d2;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #125aa3;
+}
+
+.board {
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+}
+
+.column {
+    background: white;
+    flex: 1;
+    min-height: 350px;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+}
+
+.column h3 {
+    text-align: center;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #ddd;
+    color: #444;
+}
+
+.task {
+    background: #eeeeee;
+    padding: 10px;
+    margin-top: 12px;
+    border-radius: 6px;
+    cursor: grab;
+    font-size: 14px;
+}
+
+.task b {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.completed {
+    background: #c8e6c9;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Advanced Task Manager</h2>
+
+<div class="input-box">
+    <input type="text" id="taskInput" placeholder="Enter task name">
+    <button onclick="addTask()">Add Task</button>
+</div>
+
+<div class="board">
+
+    <div class="column" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <h3>To Do</h3>
+    </div>
+
+    <div class="column" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <h3>In Progress</h3>
+    </div>
+
+    <div class="column" id="completed" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <h3>Completed</h3>
+    </div>
+
+</div>
+</div>
+
+<script>
+function allowDrop(e) {
+    e.preventDefault();
+}
+
+function drag(e) {
+    e.dataTransfer.setData("taskId", e.target.id);
+}
+
+function drop(e) {
+    e.preventDefault();
+    const id = e.dataTransfer.getData("taskId");
+    const task = document.getElementById(id);
+    e.currentTarget.appendChild(task);
+
+    if (e.currentTarget.id === "completed") {
+        task.classList.add("completed");
+        alert("Task Completed Successfully");
+    }
+}
+
+function addTask() {
+    const taskName = document.getElementById("taskInput").value.trim();
+    if (!taskName) return;
+
+    const task = document.createElement("div");
+    task.className = "task";
+    task.id = "task_" + Date.now();
+    task.draggable = true;
+    task.ondragstart = drag;
+
+    const date = new Date().toLocaleDateString();
+    task.innerHTML = `<b>${taskName}</b>${date}`;
+
+    document.querySelector(".column").appendChild(task);
+    document.getElementById("taskInput").value = "";
+}
+</script>
+
+</body>
+</html>
