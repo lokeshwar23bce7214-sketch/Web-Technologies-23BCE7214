@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Multi-Stage Form Workflow</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #f4f6f8;
+}
+.container {
+  width: 520px;
+  margin: 40px auto;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+}
+.stage {
+  display: none;
+}
+.stage.active {
+  display: block;
+}
+.progress {
+  height: 10px;
+  background: #ddd;
+  border-radius: 5px;
+  margin-bottom: 15px;
+}
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: green;
+  border-radius: 5px;
+}
+.error {
+  color: red;
+  font-size: 13px;
+}
+button {
+  margin-top: 10px;
+  padding: 8px 14px;
+}
+.success {
+  color: green;
+  margin-top: 15px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>Multi-Stage Registration</h2>
+
+  <!-- Progress Bar -->
+  <div class="progress">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <!-- Stage 1 -->
+  <div class="stage active" id="stage1">
+    <h4>Stage 1: Personal Details</h4>
+    Name:
+    <input type="text" id="name"><br>
+    <span class="error" id="e1"></span><br>
+    <button onclick="nextStage(1)">Next</button>
+  </div>
+
+  <!-- Stage 2 -->
+  <div class="stage" id="stage2">
+    <h4>Stage 2: Contact Details</h4>
+    Email:
+    <input type="text" id="email"><br>
+    <span class="error" id="e2"></span><br>
+    <button onclick="prevStage()">Back</button>
+    <button onclick="nextStage(2)">Next</button>
+  </div>
+
+  <!-- Stage 3 -->
+  <div class="stage" id="stage3">
+    <h4>Stage 3: Additional Details</h4>
+    Age:
+    <input type="number" id="age"><br>
+    <span class="error" id="e3"></span><br>
+    <button onclick="prevStage()">Back</button>
+    <button onclick="nextStage(3)">Next</button>
+  </div>
+
+  <!-- Stage 4 (Review Page) -->
+  <div class="stage" id="stage4">
+    <h4>Stage 4: Review Your Details</h4>
+
+    <p><b>Name:</b> <span id="rName"></span></p>
+    <p><b>Email:</b> <span id="rEmail"></span></p>
+    <p><b>Age:</b> <span id="rAge"></span></p>
+
+    <button onclick="prevStage()">Back</button>
+    <button onclick="submitForm()">Confirm & Submit</button>
+  </div>
+
+  <p id="finalMsg"></p>
+</div>
+
+<script>
+let currentStage = 1;
+
+/* Temporary storage */
+let formData = {
+  name: "",
+  email: "",
+  age: ""
+};
+
+function updateProgress() {
+  document.getElementById("progressBar").style.width =
+    ((currentStage - 1) / 4) * 100 + "%";
+}
+
+function showStage(stage) {
+  document.querySelectorAll(".stage").forEach(s =>
+    s.classList.remove("active")
+  );
+
+  document.getElementById("stage" + stage).classList.add("active");
+
+  /* Fill review page */
+  if (stage === 4) {
+    document.getElementById("rName").innerText = formData.name;
+    document.getElementById("rEmail").innerText = formData.email;
+    document.getElementById("rAge").innerText = formData.age;
+  }
+
+  updateProgress();
+}
+
+function nextStage(stage) {
+  if (!validateStage(stage)) return;
+
+  currentStage++;
+  showStage(currentStage);
+}
+
+function prevStage() {
+  currentStage--;
+  showStage(currentStage);
+}
+
+function validateStage(stage) {
+  document.getElementById("e" + stage).innerHTML = "";
+
+  if (stage === 1) {
+    let name = document.getElementById("name").value.trim();
+    if (name === "") {
+      e1.innerHTML = "Name is required";
+      return false;
+    }
+    formData.name = name;
+  }
+
+  if (stage === 2) {
+    let email = document.getElementById("email").value.trim();
+    if (!email.includes("@")) {
+      e2.innerHTML = "Enter valid email";
+      return false;
+    }
+    formData.email = email;
+  }
+
+  if (stage === 3) {
+    let age = document.getElementById("age").value;
+    if (age < 18) {
+      e3.innerHTML = "Age must be 18 or above";
+      return false;
+    }
+    formData.age = age;
+  }
+
+  return true;
+}
+
+function submitForm() {
+  document.getElementById("progressBar").style.width = "100%";
+  finalMsg.innerHTML = "Form submitted successfully ✔";
+  finalMsg.className = "success";
+
+  console.log("Submitted Data:", formData);
+}
+</script>
+
+</body>
+</html>

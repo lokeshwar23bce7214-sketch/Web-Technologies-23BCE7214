@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dynamic Survey Builder</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #f4f6f8;
+}
+.container {
+  width: 520px;
+  margin: 40px auto;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+}
+.question {
+  margin-bottom: 15px;
+}
+.error {
+  color: red;
+  font-size: 13px;
+}
+button {
+  padding: 8px 15px;
+}
+.success {
+  color: green;
+  margin-top: 15px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>User Survey</h2>
+
+  <form id="surveyForm"></form>
+
+  <button onclick="submitSurvey()">Submit Survey</button>
+
+  <p id="finalMsg"></p>
+</div>
+
+<script>
+/* Survey Questions */
+let questions = [
+  {
+    id: 1,
+    text: "How many hours do you study daily?",
+    type: "radio",
+    options: ["Less than 2", "2 - 4 hours", "More than 4 hours"],
+    required: true
+  },
+  {
+    id: 2,
+    text: "Which devices do you use for learning? (Select at least one)",
+    type: "checkbox",
+    options: ["Laptop", "Mobile", "Tablet", "Desktop"],
+    required: true,
+    minSelect: 1
+  },
+  {
+    id: 3,
+    text: "What challenges do you face in online learning?",
+    type: "text",
+    required: true,
+    maxLength: 50
+  }
+];
+
+let form = document.getElementById("surveyForm");
+
+/* Generate Survey Dynamically */
+questions.forEach((q, index) => {
+  let div = document.createElement("div");
+  div.className = "question";
+
+  div.innerHTML = `<label>${q.text}</label><br>`;
+
+  if (q.type === "text") {
+    div.innerHTML += `
+      <input type="text" id="q${index}">
+    `;
+  }
+
+  if (q.type === "radio") {
+    q.options.forEach(opt => {
+      div.innerHTML += `
+        <input type="radio" name="q${index}" value="${opt}"> ${opt}
+      `;
+    });
+  }
+
+  if (q.type === "checkbox") {
+    q.options.forEach(opt => {
+      div.innerHTML += `
+        <input type="checkbox" name="q${index}" value="${opt}"> ${opt}
+      `;
+    });
+  }
+
+  div.innerHTML += `<div class="error" id="e${index}"></div>`;
+  form.appendChild(div);
+});
+
+/* Validation Function */
+function submitSurvey() {
+  let valid = true;
+  finalMsg.innerHTML = "";
+
+  questions.forEach((q, index) => {
+    let error = document.getElementById("e" + index);
+    error.innerHTML = "";
+
+    if (q.type === "text") {
+      let value = document.getElementById("q" + index).value.trim();
+
+      if (q.required && value === "") {
+        error.innerHTML = "This field is required";
+        valid = false;
+      } 
+      else if (value.length > q.maxLength) {
+        error.innerHTML = "Maximum " + q.maxLength + " characters allowed";
+        valid = false;
+      }
+    }
+
+    if (q.type === "radio") {
+      let selected = document.querySelector(`input[name="q${index}"]:checked`);
+      if (q.required && !selected) {
+        error.innerHTML = "Please select an option";
+        valid = false;
+      }
+    }
+
+    if (q.type === "checkbox") {
+      let checked = document.querySelectorAll(
+        `input[name="q${index}"]:checked`
+      );
+      if (checked.length < q.minSelect) {
+        error.innerHTML = "Select at least " + q.minSelect + " option";
+        valid = false;
+      }
+    }
+  });
+
+  if (valid) {
+    finalMsg.innerHTML = "Survey Submitted Successfully ✔";
+    finalMsg.className = "success";
+    form.reset();
+  }
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>User Activity Monitor</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #f4f6f8;
+}
+.container {
+  width: 600px;
+  margin: 40px auto;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+}
+.log {
+  height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  padding: 10px;
+  font-size: 14px;
+}
+.warning {
+  color: red;
+  font-weight: bold;
+}
+button {
+  margin-top: 10px;
+  padding: 8px 12px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>Real-Time User Activity Monitor</h2>
+
+  <p>Try clicking, typing, or focusing on input below:</p>
+
+  <input type="text" placeholder="Focus & type here">
+
+  <div class="log" id="logBox"></div>
+
+  <p id="warningMsg"></p>
+
+  <button onclick="resetLog()">Reset Log</button>
+  <button onclick="exportLog()">Export Log</button>
+</div>
+
+<script>
+let activityLog = [];
+let clickCount = 0;
+let keyCount = 0;
+
+/* Capture Phase */
+document.addEventListener("click", e => recordActivity("Click", "Capture"), true);
+
+/* Bubble Phase */
+document.addEventListener("click", e => recordActivity("Click", "Bubble"));
+document.addEventListener("keydown", e => recordActivity("Key Press", "Bubble"));
+document.addEventListener("focusin", e => recordActivity("Focus In", "Bubble"));
+document.addEventListener("focusout", e => recordActivity("Focus Out", "Bubble"));
+
+function recordActivity(type, phase) {
+  let activity = {
+    event: type,
+    phase: phase,
+    time: new Date().toLocaleTimeString()
+  };
+
+  activityLog.push(activity);
+
+  if (type === "Click") clickCount++;
+  if (type === "Key Press") keyCount++;
+
+  checkSuspiciousActivity();
+  displayLog();
+}
+
+function displayLog() {
+  let box = document.getElementById("logBox");
+  box.innerHTML = "";
+
+  activityLog.forEach((a, i) => {
+    box.innerHTML += `${i + 1}. ${a.event} (${a.phase}) at ${a.time}<br>`;
+  });
+}
+
+function checkSuspiciousActivity() {
+  if (clickCount > 8 || keyCount > 15) {
+    warningMsg.innerHTML = "⚠ Suspicious activity detected!";
+    warningMsg.className = "warning";
+  }
+}
+
+function resetLog() {
+  activityLog = [];
+  clickCount = 0;
+  keyCount = 0;
+  logBox.innerHTML = "";
+  warningMsg.innerHTML = "";
+}
+
+function exportLog() {
+  let output = JSON.stringify(activityLog, null, 2);
+  alert(output);
+}
+</script>
+
+</body>
+</html>

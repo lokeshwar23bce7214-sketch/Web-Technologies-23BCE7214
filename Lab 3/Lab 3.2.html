@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Intelligent Shopping Cart</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #f2f4f7;
+}
+.cart {
+  width: 520px;
+  margin: 40px auto;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+}
+select, input, button {
+  padding: 6px;
+  margin: 5px 0;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+th, td {
+  border-bottom: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+.success { color: green; }
+.error { color: red; }
+.total {
+  margin-top: 15px;
+  font-size: 18px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="cart">
+<h2>Shopping Cart</h2>
+
+<!-- Product Selection -->
+<label>Product</label><br>
+<select id="productSelect">
+  <option value="">Select Product</option>
+</select>
+
+<label>Quantity</label><br>
+<input type="number" id="qty" min="1" value="1">
+
+<br>
+<button onclick="addToCart()">Add to Cart</button>
+
+<p id="msg"></p>
+
+<!-- Cart Table -->
+<table id="cartTable">
+  <tr>
+    <th>Product</th>
+    <th>Price</th>
+    <th>Qty</th>
+    <th>Remove</th>
+  </tr>
+</table>
+
+<!-- Coupon -->
+<label>Coupon Code</label><br>
+<input id="coupon">
+<button onclick="applyCoupon()">Apply</button>
+<p id="couponMsg"></p>
+
+<div class="total">
+  Subtotal: ₹<span id="subtotal">0</span><br>
+  Discount: ₹<span id="discount">0</span><br>
+  <b>Total: ₹<span id="total">0</span></b>
+</div>
+</div>
+
+<script>
+/* Product Catalog */
+let products = [
+  { name: "Laptop", price: 50000, category: "Electronics" },
+  { name: "Mouse", price: 500, category: "Accessories" },
+  { name: "Keyboard", price: 1000, category: "Accessories" },
+  { name: "Headphones", price: 2000, category: "Electronics" }
+];
+
+let cart = [];
+let couponDiscount = 0;
+
+/* Load product list */
+products.forEach((p, i) => {
+  productSelect.innerHTML +=
+    `<option value="${i}">${p.name} - ₹${p.price}</option>`;
+});
+
+function addToCart() {
+  let index = productSelect.value;
+  let quantity = Number(qty.value);
+  msg.innerHTML = "";
+
+  if (index === "") {
+    msg.innerHTML = "Please select a product";
+    msg.className = "error";
+    return;
+  }
+
+  let existing = cart.find(item => item.name === products[index].name);
+
+  if (existing) {
+    existing.qty += quantity;
+  } else {
+    cart.push({ ...products[index], qty: quantity });
+  }
+
+  msg.innerHTML = "Item added to cart";
+  msg.className = "success";
+
+  renderCart();
+}
+
+function removeItem(i) {
+  cart.splice(i, 1);
+  renderCart();
+}
+
+function updateQty(i, value) {
+  cart[i].qty = Number(value);
+  renderCart();
+}
+
+function applyCoupon() {
+  let code = coupon.value.trim().toUpperCase();
+
+  if (code === "SAVE10") {
+    couponDiscount = 10;
+    couponMsg.innerHTML = "Coupon applied";
+    couponMsg.className = "success";
+  } else {
+    couponDiscount = 0;
+    couponMsg.innerHTML = "Invalid coupon";
+    couponMsg.className = "error";
+  }
+  renderCart();
+}
+
+function calculateTotals() {
+  let subtotal = 0;
+  let discount = 0;
+
+  cart.forEach(item => {
+    subtotal += item.price * item.qty;
+
+    if (item.category === "Accessories" && item.qty >= 2) {
+      discount += item.price * item.qty * 0.05;
+    }
+  });
+
+  if (subtotal > 30000) discount += subtotal * 0.1;
+  if (couponDiscount > 0) discount += subtotal * couponDiscount / 100;
+
+  return { subtotal, discount, total: subtotal - discount };
+}
+
+function renderCart() {
+  cartTable.innerHTML = `
+    <tr>
+      <th>Product</th>
+      <th>Price</th>
+      <th>Qty</th>
+      <th>Remove</th>
+    </tr>
+  `;
+
+  cart.forEach((item, i) => {
+    cartTable.innerHTML += `
+      <tr>
+        <td>${item.name}</td>
+        <td>₹${item.price}</td>
+        <td>
+          <input type="number" min="1" value="${item.qty}"
+            onchange="updateQty(${i}, this.value)">
+        </td>
+        <td><button onclick="removeItem(${i})">X</button></td>
+      </tr>
+    `;
+  });
+
+  let totals = calculateTotals();
+  subtotal.innerText = totals.subtotal;
+  discount.innerText = Math.round(totals.discount);
+  total.innerText = Math.round(totals.total);
+}
+</script>
+
+</body>
+</html>

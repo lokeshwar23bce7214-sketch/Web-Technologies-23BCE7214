@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Adaptive Registration System</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #f4f6f8;
+}
+.container {
+  width: 420px;
+  margin: 40px auto;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+}
+input, select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+}
+.error {
+  color: red;
+  font-size: 13px;
+}
+.success {
+  color: green;
+}
+.hidden {
+  display: none;
+}
+button {
+  margin-top: 15px;
+  padding: 10px;
+  width: 100%;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h2>User Registration</h2>
+
+<form id="form">
+  <label>Name</label>
+  <input id="name">
+  <span class="error" id="eName"></span>
+
+  <label>Email</label>
+  <input id="email">
+  <span class="error" id="eEmail"></span>
+
+  <label>Password</label>
+  <input type="password" id="password">
+  <span class="error" id="ePwd"></span>
+
+  <label>Confirm Password</label>
+  <input type="password" id="confirm">
+  <span class="error" id="eCpwd"></span>
+
+  <label>Age</label>
+  <input type="number" id="age">
+  <span class="error" id="eAge"></span>
+
+  <label>Role</label>
+  <select id="role" onchange="roleChange()">
+    <option value="">Select</option>
+    <option>Student</option>
+    <option>Teacher</option>
+    <option>Admin</option>
+  </select>
+  <span class="error" id="eRole"></span>
+
+  <label id="skillLabel" class="hidden">Skills</label>
+  <input id="skills" class="hidden">
+
+  <button type="submit">Register</button>
+</form>
+
+<p id="finalMsg"></p>
+</div>
+
+<script>
+form.addEventListener("submit", validateForm);
+
+function roleChange() {
+  let role = role.value;
+  if (role === "Teacher" || role === "Admin") {
+    skillLabel.classList.remove("hidden");
+    skills.classList.remove("hidden");
+  } else {
+    skillLabel.classList.add("hidden");
+    skills.classList.add("hidden");
+  }
+}
+
+function validateForm(e) {
+  e.preventDefault();
+  clearErrors();
+  let valid = true;
+
+  let nameVal = document.getElementById("name").value;
+  let emailVal = document.getElementById("email").value;
+  let pwd = document.getElementById("password").value;
+  let cpwd = document.getElementById("confirm").value;
+  let ageVal = document.getElementById("age").value;
+  let roleVal = document.getElementById("role").value;
+
+  if (nameVal === "") {
+    eName.innerHTML = "Name required";
+    valid = false;
+  }
+
+  if (!emailVal.endsWith("@vitap.ac.in")) {
+    eEmail.innerHTML = "Use VIT-AP email";
+    valid = false;
+  }
+
+  if (pwd.length < 6) {
+    ePwd.innerHTML = "Minimum 6 characters";
+    valid = false;
+  }
+
+  if (pwd !== cpwd) {
+    eCpwd.innerHTML = "Passwords do not match";
+    valid = false;
+  }
+
+  if (ageVal < 18) {
+    eAge.innerHTML = "Must be 18+";
+    valid = false;
+  }
+
+  if (roleVal === "") {
+    eRole.innerHTML = "Select a role";
+    valid = false;
+  }
+
+  if (roleVal === "Admin" && pwd.length < 8) {
+    ePwd.innerHTML = "Admin needs strong password";
+    valid = false;
+  }
+
+  if (valid) {
+    finalMsg.innerHTML = "Registration Successful ✔";
+    finalMsg.className = "success";
+    form.reset();
+  }
+}
+
+
+function clearErrors() {
+  document.querySelectorAll(".error").forEach(e => e.innerHTML = "");
+}
+</script>
+
+</body>
+</html>
