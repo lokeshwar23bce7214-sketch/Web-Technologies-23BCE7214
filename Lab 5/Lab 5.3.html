@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Student Record System</title>
+
+<style>
+body {
+    font-family: "Segoe UI";
+    background:#f4f6f9;
+    margin:0;
+}
+
+.container {
+    width:820px;
+    margin:40px auto;
+    background:white;
+    padding:25px;
+    border-radius:8px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.1);
+}
+
+input {
+    padding:8px;
+    margin:6px;
+    width:170px;
+    border:1px solid #ccc;
+}
+
+button {
+    padding:8px 14px;
+    background:#28a745;
+    color:white;
+    border:none;
+    cursor:pointer;
+}
+
+button:hover { background:#1e7e34; }
+
+table {
+    width:100%;
+    margin-top:20px;
+    border-collapse:collapse;
+}
+
+th {
+    background:#28a745;
+    color:white;
+}
+
+th,td {
+    padding:10px;
+    border:1px solid #ddd;
+    text-align:center;
+}
+
+.msg { margin-top:10px; font-weight:bold; }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h2>Student Record System</h2>
+
+<input id="sid" placeholder="Student ID (S101)">
+<input id="sname" placeholder="Name">
+<input id="scourse" placeholder="Course">
+<input id="smarks" type="number" placeholder="Marks">
+
+<br>
+<button onclick="addStudent()">Add</button>
+<button onclick="updateStudent()">Update</button>
+
+<div id="msg" class="msg"></div>
+
+<table>
+<thead>
+<tr>
+<th>ID</th><th>Name</th><th>Course</th><th>Marks</th><th>Action</th>
+</tr>
+</thead>
+<tbody id="tbody"></tbody>
+</table>
+</div>
+
+<script>
+let students = [];
+
+// LOAD JSON
+async function loadStudents(){
+    try{
+        const res = await fetch("students.json");
+        const data = await res.json();
+        students = data.students;
+        displayStudents();
+    }
+    catch{
+        showMsg("Error loading JSON","red");
+    }
+}
+
+// DISPLAY
+function displayStudents(){
+    tbody.innerHTML="";
+    students.forEach((s,i)=>{
+        tbody.innerHTML+=`
+        <tr>
+        <td>${s.id}</td>
+        <td>${s.name}</td>
+        <td>${s.course}</td>
+        <td>${s.marks}</td>
+        <td><button onclick="deleteStudent(${i})">Delete</button></td>
+        </tr>`;
+    });
+}
+
+// VALIDATION
+function validate(id,name,course,marks){
+
+    const idPattern=/^S\d+$/;
+    const textPattern=/^[A-Za-z ]+$/;
+
+    if(!id||!name||!course||!marks)
+        return "All fields required";
+
+    if(!idPattern.test(id))
+        return "ID must be like S101";
+
+    if(!textPattern.test(name))
+        return "Name must contain letters only";
+
+    if(!textPattern.test(course))
+        return "Course must contain letters only";
+
+    if(isNaN(marks)||marks<0||marks>100)
+        return "Marks must be 0-100";
+
+    return "valid";
+}
+
+// ADD
+function addStudent(){
+
+    const id=sid.value.trim();
+    const name=sname.value.trim();
+    const course=scourse.value.trim();
+    const marks=smarks.value.trim();
+
+    const v=validate(id,name,course,marks);
+    if(v!=="valid"){ showMsg(v,"red"); return; }
+
+    if(students.find(s=>s.id===id)){
+        showMsg("Duplicate ID","red");
+        return;
+    }
+
+    students.push({id,name,course,marks});
+    displayStudents();
+    clearFields();
+    showMsg("Student Added","green");
+}
+
+// UPDATE
+function updateStudent(){
+
+    const student=students.find(s=>s.id===sid.value);
+
+    if(!student){
+        showMsg("Student not found","red");
+        return;
+    }
+
+    student.name=sname.value;
+    student.course=scourse.value;
+    student.marks=smarks.value;
+
+    displayStudents();
+    clearFields();
+    showMsg("Student Updated","green");
+}
+
+// DELETE
+function deleteStudent(i){
+    students.splice(i,1);
+    displayStudents();
+    showMsg("Student Deleted","green");
+}
+
+function clearFields(){
+    sid.value=""; sname.value=""; scourse.value=""; smarks.value="";
+}
+
+function showMsg(t,c){
+    msg.textContent=t;
+    msg.style.color=c;
+}
+
+loadStudents();
+</script>
+</body>
+</html>

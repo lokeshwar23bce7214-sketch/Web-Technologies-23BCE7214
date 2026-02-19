@@ -1,0 +1,6 @@
+{
+  "books": [
+    { "id": "B101", "title": "Data Structures", "author": "Seymour", "price": "450" },
+    { "id": "B102", "title": "Operating Systems", "author": "Galvin", "price": "520" }
+  ]
+}

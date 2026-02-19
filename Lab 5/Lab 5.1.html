@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Employee Management (XML)</title>
+
+<style>
+body { font-family: Arial; background:#f4f4f4; padding:30px; }
+
+.container {
+    background:white;
+    padding:20px;
+    width:750px;
+    margin:auto;
+}
+
+input { padding:6px; margin:5px; width:150px; }
+
+button { padding:6px 10px; }
+
+table {
+    width:100%;
+    margin-top:15px;
+    border-collapse: collapse;
+}
+
+th,td {
+    border:1px solid #ccc;
+    padding:8px;
+    text-align:center;
+}
+
+.msg { margin-top:10px; font-weight:bold; }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h2>Employee Management System (XML)</h2>
+
+<input id="id" placeholder="ID">
+<input id="name" placeholder="Name">
+<input id="dept" placeholder="Department">
+<input id="salary" placeholder="Salary">
+
+<button onclick="addEmployee()">Add</button>
+<button onclick="updateEmployee()">Update</button>
+
+<div id="msg" class="msg"></div>
+
+<table>
+<thead>
+<tr>
+<th>ID</th><th>Name</th><th>Department</th><th>Salary</th><th>Action</th>
+</tr>
+</thead>
+<tbody id="tbody"></tbody>
+</table>
+</div>
+
+<script>
+let xmlDoc;
+
+// Load XML using AJAX
+function loadEmployees() {
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", "employees.xml", true);
+
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            xmlDoc = xhr.responseXML;
+            displayEmployees();
+        } else {
+            showMsg("Error loading XML", "red");
+        }
+    };
+
+    xhr.send();
+}
+
+// Display employees (READ)
+function displayEmployees() {
+
+    const employees = xmlDoc.getElementsByTagName("employee");
+    tbody.innerHTML = "";
+
+    for (let i = 0; i < employees.length; i++) {
+
+        const id = employees[i].getElementsByTagName("id")[0].textContent;
+        const name = employees[i].getElementsByTagName("name")[0].textContent;
+        const dept = employees[i].getElementsByTagName("department")[0].textContent;
+        const salary = employees[i].getElementsByTagName("salary")[0].textContent;
+
+        tbody.innerHTML += `
+        <tr>
+        <td>${id}</td>
+        <td>${name}</td>
+        <td>${dept}</td>
+        <td>${salary}</td>
+        <td><button onclick="deleteEmployee(${i})">Delete</button></td>
+        </tr>`;
+    }
+}
+
+// CREATE
+function addEmployee() {
+
+    const employees = xmlDoc.getElementsByTagName("employee");
+
+    // Prevent duplicate ID
+    for (let i = 0; i < employees.length; i++) {
+        const existingID = employees[i].getElementsByTagName("id")[0].textContent;
+
+        if (existingID === document.getElementById("id").value) {
+            showMsg("Employee ID already exists!", "red");
+            return;
+        }
+    }
+
+    // Create XML nodes properly
+    const emp = xmlDoc.createElement("employee");
+
+    function createNode(tag, value){
+        const node = xmlDoc.createElement(tag);
+        node.appendChild(xmlDoc.createTextNode(value));
+        return node;
+    }
+
+    emp.appendChild(createNode("id", id.value));
+    emp.appendChild(createNode("name", name.value));
+    emp.appendChild(createNode("department", dept.value));
+    emp.appendChild(createNode("salary", salary.value));
+
+    xmlDoc.documentElement.appendChild(emp);
+
+    displayEmployees();
+    showMsg("Employee Added Successfully", "green");
+}
+
+// UPDATE
+function updateEmployee() {
+
+    const employees = xmlDoc.getElementsByTagName("employee");
+
+    for (let i = 0; i < employees.length; i++) {
+
+        if (employees[i].getElementsByTagName("id")[0].textContent === id.value) {
+
+            employees[i].getElementsByTagName("name")[0].textContent = name.value;
+            employees[i].getElementsByTagName("department")[0].textContent = dept.value;
+            employees[i].getElementsByTagName("salary")[0].textContent = salary.value;
+
+            displayEmployees();
+            showMsg("Employee Updated", "green");
+            return;
+        }
+    }
+
+    showMsg("Employee Not Found", "red");
+}
+
+// DELETE
+function deleteEmployee(index) {
+
+    const employees = xmlDoc.getElementsByTagName("employee");
+    employees[index].remove();
+
+    displayEmployees();
+    showMsg("Employee Deleted", "green");
+}
+
+function showMsg(text,color){
+msg.textContent = text;
+msg.style.color = color;
+}
+
+// Initial Load
+loadEmployees();
+</script>
+
+</body>
+</html>

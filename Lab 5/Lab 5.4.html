@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Product Inventory System</title>
+
+<style>
+body {
+    font-family:"Segoe UI";
+    background:#f4f6f9;
+    margin:0;
+}
+
+.container {
+    width:900px;
+    margin:40px auto;
+    background:white;
+    padding:25px;
+    border-radius:8px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.1);
+}
+
+input {
+    padding:8px;
+    margin:6px;
+    width:160px;
+    border:1px solid #ccc;
+}
+
+button {
+    padding:8px 14px;
+    background:#007bff;
+    color:white;
+    border:none;
+    cursor:pointer;
+}
+
+button:hover { background:#0056b3; }
+
+table {
+    width:100%;
+    margin-top:20px;
+    border-collapse:collapse;
+}
+
+th {
+    background:#007bff;
+    color:white;
+}
+
+th,td {
+    padding:10px;
+    border:1px solid #ddd;
+    text-align:center;
+}
+
+.low-stock {
+    background:#ffe6e6;
+    color:#cc0000;
+    font-weight:bold;
+}
+
+.msg { margin-top:10px; font-weight:bold; }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h2>Product Inventory System</h2>
+
+<input id="pid" placeholder="Product ID (P101)">
+<input id="pname" placeholder="Name">
+<input id="pcategory" placeholder="Category">
+<input id="pprice" type="number" placeholder="Price">
+<input id="pstock" type="number" placeholder="Stock">
+
+<br>
+<button onclick="addProduct()">Add</button>
+<button onclick="updateProduct()">Update</button>
+
+<input id="search" placeholder="Search by Category" oninput="searchCategory()">
+
+<div id="msg" class="msg"></div>
+<h3 id="total"></h3>
+
+<table>
+<thead>
+<tr>
+<th>ID</th><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Action</th>
+</tr>
+</thead>
+<tbody id="tbody"></tbody>
+</table>
+</div>
+
+<script>
+let products=[];
+
+// LOAD JSON USING FETCH (AJAX)
+async function loadProducts(){
+    try{
+        const res = await fetch("inventory.json");
+        const data = await res.json();
+        products = data.products;
+        displayProducts(products);
+    }
+    catch{
+        showMsg("Error loading inventory data","red");
+    }
+}
+
+// DISPLAY + CONDITIONAL FORMATTING + TOTAL VALUE
+function displayProducts(list){
+
+    tbody.innerHTML="";
+    let totalValue = 0;
+
+    list.forEach((p,i)=>{
+
+        totalValue += Number(p.price) * Number(p.stock);
+
+        const lowStock = Number(p.stock) < 5;
+
+        tbody.innerHTML += `
+        <tr class="${lowStock ? 'low-stock' : ''}">
+            <td>${p.id}</td>
+            <td>${p.name}</td>
+            <td>${p.category}</td>
+            <td>₹${p.price}</td>
+            <td>
+                ${p.stock}
+                ${lowStock ? "<br><small>Low Stock Warning</small>" : ""}
+            </td>
+            <td><button onclick="deleteProduct(${i})">Delete</button></td>
+        </tr>`;
+    });
+
+    total.innerText = "Total Inventory Value: ₹ " + totalValue.toFixed(2);
+}
+
+// VALIDATION + ERROR HANDLING
+function validateProduct(p){
+
+    if(!p.id || !p.name || !p.category || p.price==="" || p.stock==="")
+        return "All fields are required";
+
+    if(isNaN(p.price) || Number(p.price)<=0)
+        return "Invalid price value";
+
+    if(isNaN(p.stock) || Number(p.stock)<0)
+        return "Invalid stock value";
+
+    return "valid";
+}
+
+// ADD PRODUCT
+function addProduct(){
+
+    const product = {
+        id: pid.value.trim(),
+        name: pname.value.trim(),
+        category: pcategory.value.trim(),
+        price: pprice.value.trim(),
+        stock: pstock.value.trim()
+    };
+
+    const check = validateProduct(product);
+
+    if(check !== "valid"){
+        showMsg(check,"red");
+        return;
+    }
+
+    if(products.find(x=>x.id===product.id)){
+        showMsg("Duplicate Product ID","red");
+        return;
+    }
+
+    product.price = Number(product.price);
+    product.stock = Number(product.stock);
+
+    products.push(product);
+    displayProducts(products);
+    showMsg("Product Added","green");
+}
+
+// UPDATE PRODUCT
+function updateProduct(){
+
+    const p = products.find(x=>x.id===pid.value);
+
+    if(!p){
+        showMsg("Product not found","red");
+        return;
+    }
+
+    p.name = pname.value;
+    p.category = pcategory.value;
+    p.price = Number(pprice.value);
+    p.stock = Number(pstock.value);
+
+    displayProducts(products);
+    showMsg("Product Updated","green");
+}
+
+// DELETE PRODUCT
+function deleteProduct(i){
+    products.splice(i,1);
+    displayProducts(products);
+    showMsg("Product Deleted","green");
+}
+
+// SEARCH CATEGORY
+function searchCategory(){
+    const key = search.value.toLowerCase();
+    const filtered = products.filter(p =>
+        p.category.toLowerCase().includes(key)
+    );
+    displayProducts(filtered);
+}
+
+// MESSAGE DISPLAY
+function showMsg(text,color){
+    msg.innerText=text;
+    msg.style.color=color;
+}
+
+loadProducts();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Library Book Management</title>
+
+<style>
+body {
+    font-family: "Segoe UI";
+    background:#eef1f5;
+    margin:0;
+}
+
+.container {
+    width:800px;
+    margin:40px auto;
+    background:white;
+    padding:25px;
+    border-radius:8px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.1);
+}
+
+input {
+    padding:8px;
+    margin:6px;
+    width:170px;
+    border:1px solid #ccc;
+}
+
+button {
+    padding:8px 14px;
+    background:#2d6cdf;
+    color:white;
+    border:none;
+    cursor:pointer;
+}
+
+button:hover { background:#1f4ea3; }
+
+table {
+    width:100%;
+    margin-top:20px;
+    border-collapse:collapse;
+}
+
+th {
+    background:#2d6cdf;
+    color:white;
+}
+
+th,td {
+    padding:10px;
+    border:1px solid #ddd;
+    text-align:center;
+}
+
+.msg {
+    margin-top:10px;
+    font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h2>Library Book Management</h2>
+
+<input id="bid" placeholder="Book ID (B101)">
+<input id="btitle" placeholder="Title">
+<input id="bauthor" placeholder="Author">
+<input id="bprice" type="number" placeholder="Price">
+
+<br>
+<button onclick="addBook()">Add Book</button>
+<button onclick="updateBook()">Update Book</button>
+
+<div id="msg" class="msg"></div>
+
+<table>
+<thead>
+<tr>
+<th>ID</th><th>Title</th><th>Author</th><th>Price</th><th>Action</th>
+</tr>
+</thead>
+<tbody id="tbody"></tbody>
+</table>
+</div>
+
+<script>
+let books = [];
+
+// Load JSON
+async function loadBooks(){
+    const res = await fetch("books.json");
+    const data = await res.json();
+    books = data.books;
+    displayBooks();
+}
+
+// Display
+function displayBooks(){
+    tbody.innerHTML="";
+    books.forEach((b,i)=>{
+        tbody.innerHTML += `
+        <tr>
+        <td>${b.id}</td>
+        <td>${b.title}</td>
+        <td>${b.author}</td>
+        <td>₹${b.price}</td>
+        <td><button onclick="deleteBook(${i})">Delete</button></td>
+        </tr>`;
+    });
+}
+
+// Validation
+function validateInputs(id,title,author,price){
+
+    const idPattern = /^B\d+$/;
+    const textPattern = /^[A-Za-z ]+$/;
+
+    if(!id || !title || !author || !price)
+        return "All fields required";
+
+    if(!idPattern.test(id))
+        return "ID must be like B101";
+
+    if(!textPattern.test(title))
+        return "Title must contain letters only";
+
+    if(!textPattern.test(author))
+        return "Author must contain letters only";
+
+    if(isNaN(price) || Number(price)<=0)
+        return "Price must be positive number";
+
+    return "valid";
+}
+
+// Add
+function addBook(){
+
+    const id = bid.value.trim();
+    const title = btitle.value.trim();
+    const author = bauthor.value.trim();
+    const price = bprice.value.trim();
+
+    const validation = validateInputs(id,title,author,price);
+    if(validation!=="valid"){
+        showMsg(validation,"red");
+        return;
+    }
+
+    if(books.find(b=>b.id===id)){
+        showMsg("Duplicate Book ID","red");
+        return;
+    }
+
+    books.push({id,title,author,price:Number(price).toFixed(2)});
+    displayBooks();
+    clearFields();
+    showMsg("Book Added","green");
+}
+
+// Update
+function updateBook(){
+
+    const id = bid.value.trim();
+    const title = btitle.value.trim();
+    const author = bauthor.value.trim();
+    const price = bprice.value.trim();
+
+    const validation = validateInputs(id,title,author,price);
+    if(validation!=="valid"){
+        showMsg(validation,"red");
+        return;
+    }
+
+    const book = books.find(b=>b.id===id);
+    if(!book){
+        showMsg("Book not found","red");
+        return;
+    }
+
+    book.title=title;
+    book.author=author;
+    book.price=Number(price).toFixed(2);
+
+    displayBooks();
+    clearFields();
+    showMsg("Book Updated","green");
+}
+
+// Delete
+function deleteBook(i){
+    books.splice(i,1);
+    displayBooks();
+    showMsg("Book Deleted","green");
+}
+
+function clearFields(){
+    bid.value=""; btitle.value=""; bauthor.value=""; bprice.value="";
+}
+
+function showMsg(text,color){
+    msg.textContent=text;
+    msg.style.color=color;
+}
+
+loadBooks();
+</script>
+</body>
+</html>
