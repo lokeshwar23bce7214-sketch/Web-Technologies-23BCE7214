@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Live Product Finder</title>
+
+<style>
+body {
+    font-family: Georgia, serif;
+    background: #ffffff;
+    margin: 0;
+}
+
+.header {
+    background: #333;
+    color: white;
+    padding: 15px;
+    text-align: center;
+}
+
+.search-box {
+    padding: 20px;
+    text-align: center;
+    background: #f7f7f7;
+}
+
+input {
+    width: 260px;
+    padding: 8px;
+    border: 1px solid #444;
+}
+
+.results {
+    width: 600px;
+    margin: 20px auto;
+}
+
+.item {
+    border-left: 5px solid #333;
+    background: #fafafa;
+    padding: 12px;
+    margin-bottom: 12px;
+}
+
+.status {
+    text-align: center;
+    color: #777;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h2>Product Finder</h2>
+</div>
+
+<div class="search-box">
+    <input type="text" id="search" placeholder="Type product name...">
+</div>
+
+<div id="status" class="status"></div>
+<div id="results" class="results"></div>
+
+<script>
+const searchInput = document.getElementById("search");
+const resultsDiv = document.getElementById("results");
+const statusDiv = document.getElementById("status");
+
+let debounceTimer;
+
+// Debouncing
+searchInput.addEventListener("input", () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(fetchProducts, 500);
+});
+
+async function fetchProducts() {
+
+    const query = searchInput.value.trim().toLowerCase();
+
+    if (!query) {
+        resultsDiv.innerHTML = "";
+        statusDiv.textContent = "";
+        return;
+    }
+
+    statusDiv.textContent = "Searching...";
+
+    try {
+        const response = await fetch("products.json");
+        const data = await response.json();
+
+        const filtered = data.products.filter(p =>
+            p.name.toLowerCase().includes(query)
+        );
+
+        statusDiv.textContent = "";
+
+        if (filtered.length === 0) {
+            statusDiv.textContent = "No results found";
+            resultsDiv.innerHTML = "";
+            return;
+        }
+
+        resultsDiv.innerHTML = "";
+
+        filtered.forEach(p => {
+            resultsDiv.innerHTML += `
+            <div class="item">
+                <strong>${p.name}</strong><br>
+                Category: ${p.category}<br>
+                Price: ₹${p.price}
+            </div>`;
+        });
+
+    } catch {
+        statusDiv.textContent = "Error loading product data";
+    }
+}
+</script>
+
+</body>
+</html>

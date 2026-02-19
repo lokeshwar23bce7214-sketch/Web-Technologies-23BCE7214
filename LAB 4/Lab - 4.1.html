@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>User Validation</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Tahoma, sans-serif;
+    background: #f0f4f8;
+}
+
+.wrapper {
+    width: 420px;
+    margin: 80px auto;
+    background: #ffffff;
+    border: 1px solid #ddd;
+    padding: 25px;
+    border-radius: 6px;
+}
+
+h2 {
+    text-align: center;
+    color: #444;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #aaa;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 15px;
+    background: #444;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #222;
+}
+
+.status {
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+.loading {
+    color: #888;
+}
+
+.available {
+    color: green;
+}
+
+.taken {
+    color: red;
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+    <h2>Sign Up</h2>
+
+    <form id="form">
+        <input type="text" id="username" placeholder="Enter username">
+        <div id="status" class="status"></div>
+        <button type="submit">Submit</button>
+    </form>
+</div>
+
+<script>
+const usernameInput = document.getElementById("username");
+const statusDiv = document.getElementById("status");
+const form = document.getElementById("form");
+
+let available = false;
+let debounceTimer;
+
+// Debounce typing
+usernameInput.addEventListener("input", () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(checkUser, 400);
+});
+
+async function checkUser() {
+
+    const value = usernameInput.value.trim().toLowerCase();
+
+    if (!value) {
+        statusDiv.textContent = "";
+        return;
+    }
+
+    statusDiv.className = "status loading";
+    statusDiv.textContent = "Checking...";
+
+    try {
+        const res = await fetch("users.json");
+        const data = await res.json();
+
+        if (data.users.includes(value)) {
+            statusDiv.className = "status taken";
+            statusDiv.textContent = "Username already taken";
+            available = false;
+        } else {
+            statusDiv.className = "status available";
+            statusDiv.textContent = "Username available";
+            available = true;
+        }
+
+    } catch {
+        statusDiv.textContent = "Error reading data";
+        available = false;
+    }
+}
+
+// Prevent submission
+form.addEventListener("submit", function(e) {
+    if (!available) {
+        e.preventDefault();
+        alert("Choose a different username.");
+    } else {
+        e.preventDefault(); // demo
+        alert("Submitted successfully!");
+    }
+});
+</script>
+
+</body>
+</html>

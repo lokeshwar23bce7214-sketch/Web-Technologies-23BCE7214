@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Student Dashboard</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: "Segoe UI", sans-serif;
+    display: flex;
+    background: #eef1f5;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 220px;
+    background: #222;
+    color: white;
+    padding: 20px;
+    height: 100vh;
+}
+
+.sidebar h3 {
+    margin-bottom: 20px;
+}
+
+/* Main Area */
+.main {
+    flex: 1;
+    padding: 25px;
+}
+
+/* Form Card */
+.card {
+    background: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    margin: 8px 0;
+    border: 1px solid #bbb;
+}
+
+button {
+    padding: 8px 14px;
+    margin-right: 5px;
+    border: none;
+    background: #444;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #000;
+}
+
+/* Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+th {
+    background: #444;
+    color: white;
+}
+
+th, td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+tr:nth-child(even) {
+    background: #f5f5f5;
+}
+
+.msg {
+    margin-top: 10px;
+    font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="sidebar">
+    <h3>Student Panel</h3>
+    <p>Manage Records</p>
+</div>
+
+<div class="main">
+
+<div class="card">
+    <h3>Add / Update Student</h3>
+
+    <input id="sid" placeholder="Student ID">
+    <input id="sname" placeholder="Name">
+    <input id="dept" placeholder="Department">
+    <input id="marks" placeholder="Marks">
+
+    <button onclick="addStudent()">Add</button>
+    <button onclick="updateStudent()">Update</button>
+
+    <div id="msg" class="msg"></div>
+</div>
+
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Dept</th>
+<th>Marks</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="tbody"></tbody>
+</table>
+
+</div>
+
+<script>
+let students = [];
+
+// Fake AJAX delay
+function simulateServer(cb){
+    msg.textContent = "Processing...";
+    setTimeout(cb, 400);
+}
+
+// CREATE
+function addStudent(){
+simulateServer(()=>{
+
+    if(students.find(s=>s.id===sid.value)){
+        showMsg("ID already exists","red");
+        return;
+    }
+
+    students.push({
+        id:sid.value,
+        name:sname.value,
+        dept:dept.value,
+        marks:marks.value
+    });
+
+    render();
+    clearForm();
+    showMsg("Added Successfully","green");
+});
+}
+
+// READ
+function render(){
+tbody.innerHTML="";
+students.forEach((s,i)=>{
+tbody.innerHTML+=`
+<tr>
+<td>${s.id}</td>
+<td>${s.name}</td>
+<td>${s.dept}</td>
+<td>${s.marks}</td>
+<td>
+<button onclick="edit(${i})">Edit</button>
+<button onclick="removeStudent(${i})">Delete</button>
+</td>
+</tr>`;
+});
+}
+
+// UPDATE
+function updateStudent(){
+simulateServer(()=>{
+const s = students.find(x=>x.id===sid.value);
+
+if(!s){
+showMsg("Student not found","red");
+return;
+}
+
+s.name=sname.value;
+s.dept=dept.value;
+s.marks=marks.value;
+
+render();
+clearForm();
+showMsg("Updated","green");
+});
+}
+
+// DELETE
+function removeStudent(i){
+simulateServer(()=>{
+students.splice(i,1);
+render();
+showMsg("Deleted","green");
+});
+}
+
+// EDIT LOAD
+function edit(i){
+const s=students[i];
+sid.value=s.id;
+sname.value=s.name;
+dept.value=s.dept;
+marks.value=s.marks;
+}
+
+function clearForm(){
+sid.value=""; sname.value=""; dept.value=""; marks.value="";
+}
+
+function showMsg(t,c){
+msg.textContent=t;
+msg.style.color=c;
+}
+</script>
+
+</body>
+</html>
