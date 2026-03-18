@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Marks Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        .subjects-container {
+            margin-top: 20px;
+            min-height: 60px;
+        }
+
+        .subjects-container.empty::after {
+            content: "👆 Enter number of subjects above to add subject fields";
+            display: block;
+            text-align: center;
+            color: #888;
+            font-style: italic;
+            padding: 40px 20px;
+            font-size: 1.1em;
+        }
+
+        .subject-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: end;
+            opacity: 0;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .subject-row:nth-child(1) { animation-delay: 0.1s; }
+        .subject-row:nth-child(2) { animation-delay: 0.2s; }
+        .subject-row:nth-child(3) { animation-delay: 0.3s; }
+        .subject-row:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .subject-row input {
+            flex: 1;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 172, 254, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .results {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 15px;
+            color: white;
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-item {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+        }
+
+        .remove-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 10px;
+            flex-shrink: 0;
+        }
+
+        .remove-btn:hover {
+            background: #ff5252;
+        }
+
+        .instruction {
+            background: #e3f2fd;
+            border-left: 4px solid #4facfe;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 1em;
+        }
+
+        @media (max-width: 600px) {
+            .subject-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 Student Marks Calculator</h1>
+            <p>Enter student details and marks to calculate average</p>
+        </div>
+        
+        <div class="content">
+            <form id="marksForm">
+                <div class="form-group">
+                    <label for="studentName">Student Name:</label>
+                    <input type="text" id="studentName" placeholder="Enter student name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="numSubjects">Number of Subjects:</label>
+                    <input type="number" id="numSubjects" min="1" max="10" placeholder="e.g., 5" required>
+                </div>
+
+                <div class="instruction">
+                    📝 <strong>Step 1:</strong> Enter number of subjects (1-10)<br>
+                    📝 <strong>Step 2:</strong> Fill subject names and marks<br>
+                    🧮 <strong>Step 3:</strong> Click Calculate Average
+                </div>
+
+                <div class="subjects-container empty" id="subjectsContainer"></div>
+
+                <button type="submit" class="btn" id="calculateBtn" disabled>
+                    🧮 Calculate Average
+                </button>
+            </form>
+
+            <div class="results" id="results">
+                <div class="result-item" id="nameResult"></div>
+                <div class="result-item" id="totalResult"></div>
+                <div class="result-item" id="avgResult"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ES6 Features: let, const, arrow functions, template literals, destructuring
+        const form = document.getElementById('marksForm');
+        const numSubjectsInput = document.getElementById('numSubjects');
+        const subjectsContainer = document.getElementById('subjectsContainer');
+        const calculateBtn = document.getElementById('calculateBtn');
+        const resultsDiv = document.getElementById('results');
+        const nameResult = document.getElementById('nameResult');
+        const totalResult = document.getElementById('totalResult');
+        const avgResult = document.getElementById('avgResult');
+
+        let subjectInputs = [];
+
+        // Arrow function to create subject input fields
+        const createSubjectInputs = (num) => {
+            subjectsContainer.classList.remove('empty');
+            subjectsContainer.innerHTML = '';
+            subjectInputs = [];
+
+            for (let i = 0; i < num; i++) {
+                const subjectDiv = document.createElement('div');
+                subjectDiv.className = 'subject-row';
+                subjectDiv.innerHTML = `
+                    <input type="text" placeholder="Subject ${i + 1} (e.g., Math)" class="subject-name" required>
+                    <input type="number" placeholder="Marks (0-100)" class="subject-marks" min="0" max="100" step="0.01" required>
+                    
+                `;
+                subjectsContainer.appendChild(subjectDiv);
+
+                // Store input references
+                const nameInput = subjectDiv.querySelector('.subject-name');
+                const marksInput = subjectDiv.querySelector('.subject-marks');
+                subjectInputs.push({ name: nameInput, marks: marksInput });
+
+                // Add remove functionality (except first subject)
+                const removeBtn = subjectDiv.querySelector('.remove-btn');
+                if (removeBtn) {
+                    removeBtn.addEventListener('click', () => {
+                        const index = subjectInputs.indexOf({ name: nameInput, marks: marksInput });
+                        if (index > -1) {
+                            subjectInputs.splice(index, 1);
+                            subjectDiv.remove();
+                            if (subjectInputs.length === 0) {
+                                subjectsContainer.classList.add('empty');
+                                calculateBtn.disabled = true;
+                            }
+                        }
+                    });
+                }
+            }
+
+            // Enable calculate button
+            calculateBtn.disabled = false;
+        };
+
+        // Listen for number of subjects change
+        numSubjectsInput.addEventListener('input', (e) => {
+            const num = parseInt(e.target.value);
+            if (num && num >= 1 && num <= 10) {
+                createSubjectInputs(num);
+            } else {
+                // Clear subjects if invalid input
+                subjectsContainer.classList.add('empty');
+                subjectsContainer.innerHTML = '';
+                subjectInputs = [];
+                calculateBtn.disabled = true;
+            }
+        });
+
+        // Arrow function to calculate average (ES6 feature)
+        const calculateAverage = (marks) => {
+            const total = marks.reduce((sum, mark) => sum + mark, 0);
+            return total / marks.length;
+        };
+
+        // Form submission handler
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const studentName = document.getElementById('studentName').value.trim();
+            if (!studentName) {
+                alert('⚠️ Please enter student name!');
+                return;
+            }
+
+            if (subjectInputs.length === 0) {
+                alert('⚠️ Please enter number of subjects first!');
+                return;
+            }
+
+            const marks = subjectInputs
+                .map(inputObj => parseFloat(inputObj.marks.value))
+                .filter(mark => !isNaN(mark) && mark >= 0 && mark <= 100);
+
+            if (marks.length !== subjectInputs.length) {
+                alert('⚠️ Please enter valid marks (0-100) for all subjects!');
+                return;
+            }
+
+            // Calculate results using ES6 features
+            const totalMarks = marks.reduce((sum, mark) => sum + mark, 0);
+            const average = calculateAverage(marks);
+
+            // Display results using template literals
+            nameResult.innerHTML = `👨‍🎓 <strong>Student Name:</strong> ${studentName}`;
+            totalResult.innerHTML = `📊 <strong>Total Marks:</strong> ${totalMarks.toFixed(2)} / ${marks.length * 100}`;
+            avgResult.innerHTML = `⭐ <strong>Average Marks:</strong> ${average.toFixed(2)} (${((average/100)*100).toFixed(1)}%)`;
+
+            // Show results with animation
+            resultsDiv.classList.add('show');
+            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>

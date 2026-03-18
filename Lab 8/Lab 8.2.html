@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ES6 Student Object - Destructuring & Spread</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .form-section, .results-section {
+            background: #f8f9ff;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            border-left: 5px solid #11998e;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        input[type="number"], input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #11998e;
+            box-shadow: 0 0 0 3px rgba(17, 153, 142, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(17, 153, 142, 0.4);
+        }
+
+        .es6-highlight {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 5px solid #ffc107;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        .result-box {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .result-box.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        .object-display {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            font-size: 14px;
+            border: 2px solid #dee2e6;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .content { padding: 20px; }
+            .header h1 { font-size: 2em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 ES6 Student Object Processor</h1>
+            <p>Object Destructuring + Spread Operator in Action</p>
+        </div>
+
+        <div class="content">
+            <!-- INPUT FORM -->
+            <div class="form-section">
+                <h2>📝 Enter Student Details</h2>
+                
+                <form id="studentForm">
+                    <div class="form-group">
+                        <label for="studentId">Student ID:</label>
+                        <input type="number" id="studentId" min="1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="studentName">Student Name:</label>
+                        <input type="text" id="studentName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="department">Department:</label>
+                        <input type="text" id="department" placeholder="e.g., CSE, ECE" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="marks">Marks (0-100):</label>
+                        <input type="number" id="marks" min="0" max="100" step="0.01" required>
+                    </div>
+
+                    <button type="submit" class="btn">🚀 Process with ES6!</button>
+                </form>
+            </div>
+
+            <!-- ES6 CODE EXPLANATION -->
+            <div class="es6-highlight">
+                <strong>🔥 ES6 Code That Runs:</strong><br>
+                <code>
+const student = { id, name, dept, marks };<br>
+const { id, name, department, marks } = student;  // ← DESTRUCTURING<br>
+const updatedStudent = { ...student, grade: getGrade(marks) };  // ← SPREAD
+                </code>
+            </div>
+
+            <!-- RESULTS -->
+            <div class="results-section">
+                <h2>📊 ES6 Results</h2>
+                
+                <div id="destructuringResult" class="result-box">
+                    <h3>1️⃣ Destructured Values:</h3>
+                    <div id="extractedValues" class="object-display"></div>
+                </div>
+
+                <div id="spreadResult" class="result-box">
+                    <h3>2️⃣ Updated Object (Spread + Grade):</h3>
+                    <div id="updatedObject" class="object-display"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ES6 FEATURES IN ACTION
+        const form = document.getElementById('studentForm');
+        const destructuringResult = document.getElementById('destructuringResult');
+        const spreadResult = document.getElementById('spreadResult');
+        const extractedValues = document.getElementById('extractedValues');
+        const updatedObject = document.getElementById('updatedObject');
+
+        // GRADE CALCULATION FUNCTION (Arrow Function - ES6)
+        const getGrade = (marks) => {
+            if (marks >= 90) return "🟢 A (Outstanding)";
+            if (marks >= 80) return "🟡 B (Excellent)";
+            if (marks >= 70) return "🟠 C (Good)";
+            if (marks >= 60) return "🔵 D (Average)";
+            return "🔴 F (Fail)";
+        };
+
+        // FORM HANDLER
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            // 1. COLLECT USER INPUT → CREATE OBJECT
+            const student = {
+                id: parseInt(document.getElementById('studentId').value),
+                name: document.getElementById('studentName').value.trim(),
+                department: document.getElementById('department').value.trim(),
+                marks: parseFloat(document.getElementById('marks').value)
+            };
+
+            // 2. OBJECT DESTRUCTURING (ES6 MAGIC!)
+            const { id, name, department, marks } = student;
+
+            // 3. DISPLAY DESTRUCTURED VALUES
+            extractedValues.textContent = `
+ID: ${id}
+Name: ${name}
+Department: ${department}
+Marks: ${marks}
+            `.trim();
+            destructuringResult.classList.add('show');
+
+            // 4. SPREAD OPERATOR + NEW PROPERTY (ES6!)
+            const updatedStudent = {
+                ...student,                           // 📋 Copy ALL properties
+                grade: getGrade(marks)               // ➕ Add NEW grade
+            };
+
+            // 5. DISPLAY UPDATED OBJECT
+            updatedObject.textContent = JSON.stringify(updatedStudent, null, 2);
+            spreadResult.classList.add('show');
+
+            // SMOOTH SCROLL TO RESULTS
+            document.querySelector('.results-section').scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    </script>
+</body>
+</html>
