@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cards</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script>
+const e = React.createElement;
+
+function Card(p) {
+  return e("div",{style:styles.card},
+    e("h3",null,p.name),
+    e("p",null,p.dept),
+    e("p",null,"Marks: "+p.marks)
+  );
+}
+
+function App(){
+  return e("div",{style:styles.container},
+    e("h1",null,"Student Cards"),
+    e("div",{style:styles.row},
+      e(Card,{name:"Lokeshwar",dept:"CSE",marks:92}),
+      e(Card,{name:"Pranavi",dept:"ECE",marks:88})
+    )
+  );
+}
+
+const styles={
+ container:{textAlign:"center",padding:"20px"},
+ row:{display:"flex",justifyContent:"center",gap:"20px"},
+ card:{padding:"20px",borderRadius:"10px",background:"#bbdefb"}
+};
+
+ReactDOM.createRoot(document.getElementById("root")).render(e(App));
+</script>
+</body>
+</html>

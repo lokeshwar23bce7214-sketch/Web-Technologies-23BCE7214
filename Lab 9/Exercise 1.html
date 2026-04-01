@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Profile</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script>
+const e = React.createElement;
+
+function App() {
+  return e("div", { style: styles.container },
+    e("div", { style: styles.card },
+      e("h1", null, "🎓 Student Profile"),
+      e("p", null, "Name: Lokeshwar"),
+      e("p", null, "Department: CSE"),
+      e("p", null, "Year: 3rd"),
+      e("p", null, "Section: A")
+    )
+  );
+}
+
+const styles = {
+  container: { height:"100vh", display:"flex", justifyContent:"center", alignItems:"center", background:"#e3f2fd" },
+  card: { padding:"30px", background:"white", borderRadius:"10px", boxShadow:"0 5px 15px gray" }
+};
+
+ReactDOM.createRoot(document.getElementById("root")).render(e(App));
+</script>
+</body>
+</html>

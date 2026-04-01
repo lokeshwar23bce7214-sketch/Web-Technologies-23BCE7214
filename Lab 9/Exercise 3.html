@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Counter</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script>
+const e = React.createElement;
+const {useState} = React;
+
+function App(){
+  const [c,setC]=useState(0);
+  return e("div",{style:styles.container},
+    e("h1",null,"Counter"),
+    e("h2",null,c),
+    e("button",{onClick:()=>setC(c+1)},"+"),
+    e("button",{onClick:()=>setC(c-1)},"-")
+  );
+}
+
+const styles={container:{textAlign:"center",marginTop:"100px"}};
+
+ReactDOM.createRoot(document.getElementById("root")).render(e(App));
+</script>
+</body>
+</html>
