@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Tasks</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI";
+      background: linear-gradient(120deg, #f6d365, #fda085);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: rgba(255,255,255,0.3);
+      backdrop-filter: blur(10px);
+      padding: 30px;
+      border-radius: 15px;
+      width: 380px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .top {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .top input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+    }
+
+    .top button {
+      width: 45px;
+      border: none;
+      border-radius: 8px;
+      background: black;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .item {
+      background: white;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .item button {
+      background: crimson;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>My Tasks ✨</h1>
+
+  <div class="top">
+    <input type="text" id="input" placeholder="Add something...">
+    <button onclick="addItem()">+</button>
+  </div>
+
+  <div id="list"></div>
+</div>
+
+<script>
+  function addItem() {
+    let input = document.getElementById("input");
+    let text = input.value;
+
+    if (text.trim() === "") return;
+
+    let div = document.createElement("div");
+    div.className = "item";
+
+    div.innerHTML = `
+      <span>${text}</span>
+      <button onclick="this.parentElement.remove()">Delete</button>
+    `;
+
+    document.getElementById("list").appendChild(div);
+
+    input.value = "";
+  }
+</script>
+
+</body>
+</html>

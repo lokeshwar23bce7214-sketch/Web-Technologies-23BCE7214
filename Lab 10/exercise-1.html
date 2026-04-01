@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Signup</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI";
+      background: linear-gradient(120deg, #f093fb, #f5576c);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.3);
+      padding: 30px;
+      border-radius: 15px;
+      backdrop-filter: blur(10px);
+      width: 350px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 12px 0;
+      border-radius: 8px;
+      border: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: black;
+      color: white;
+      border: none;
+    }
+
+    .msg { font-size: 13px; }
+  </style>
+</head>
+
+<body>
+
+<div class="card">
+  <h2>Sign Up ✨</h2>
+
+  <input id="n" placeholder="Name">
+  <div id="e1" class="msg"></div>
+
+  <input id="e" placeholder="Email">
+  <div id="e2" class="msg"></div>
+
+  <input id="p" type="password" placeholder="Password">
+  <div id="e3" class="msg"></div>
+
+  <button onclick="check()">Create</button>
+</div>
+
+<script>
+function check() {
+  let n = document.getElementById("n").value;
+  let e = document.getElementById("e").value;
+  let p = document.getElementById("p").value;
+
+  document.getElementById("e1").innerText = "";
+  document.getElementById("e2").innerText = "";
+  document.getElementById("e3").innerText = "";
+
+  if (n === "") document.getElementById("e1").innerText = "Enter name";
+  if (!e.includes("@")) document.getElementById("e2").innerText = "Wrong email";
+  if (p.length < 6) document.getElementById("e3").innerText = "Weak password";
+}
+</script>
+
+</body>
+</html>
